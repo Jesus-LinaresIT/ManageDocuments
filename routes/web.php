@@ -26,9 +26,13 @@ Route::middleware('auth')->group(function () {
     Route::post('projects/{project}/docs/{documentType}/upload', [DocumentController::class, 'upload'])->name('projects.docs.upload');
 
     // Rutas de administración (solo administradores)
-    Route::middleware('can:manage.users')->group(function () {
-        Route::resource('admin/users', UserController::class);
-    });
+    Route::prefix('admin')
+        ->name('admin.')
+        ->middleware('can:manage.users')
+        ->group(function () {
+            Route::resource('users', UserController::class);
+        });
+
 
     // Rutas de revisión (stubs)
     Route::prefix('reviews')->name('reviews.')->group(function () {

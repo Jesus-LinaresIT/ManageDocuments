@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -45,7 +46,8 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $user->assignRole($request->roles);
+        $roles = Role::whereIn('id', $request->roles)->get();
+        $user->assignRole($roles);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Usuario creado exitosamente.');
@@ -80,6 +82,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
             'roles' => 'required|array',
+            'roles.*' => 'integer|exists:roles,id',
         ]);
 
         $user->update([
@@ -91,7 +94,8 @@ class UserController extends Controller
             $user->update(['password' => Hash::make($request->password)]);
         }
 
-        $user->syncRoles($request->roles);
+        $roles = Role::whereIn('id', $request->roles)->get();
+        $user->syncRoles($roles);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Usuario actualizado exitosamente.');
