@@ -34,12 +34,36 @@ Route::middleware('auth')->group(function () {
         });
 
 
-    // Rutas de revisión (stubs)
+    // Rutas de revisión
     Route::prefix('reviews')->name('reviews.')->group(function () {
         Route::get('/', [ReviewController::class, 'index'])->name('index');
-        Route::get('/{id}', [ReviewController::class, 'show'])->name('show');
-        Route::post('/{id}/approve', [ReviewController::class, 'approve'])->name('approve');
-        Route::post('/{id}/deny', [ReviewController::class, 'deny'])->name('deny');
+        Route::get('/{projectDocument}', [ReviewController::class, 'show'])->name('show');
+        Route::post('/{projectDocument}/approve', [ReviewController::class, 'approve'])->name('approve');
+        Route::post('/{projectDocument}/deny', [ReviewController::class, 'deny'])->name('deny');
+    });
+
+    // Rutas de reportes
+    Route::prefix('reports')->name('reports.')->middleware('can:view.reports')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/project/{project}', [ReportController::class, 'projectDetails'])->name('project-details');
+    });
+
+    // Rutas de auditoría
+    Route::prefix('audit')->name('audit.')->middleware('can:view.reports')->group(function () {
+        Route::get('/', [AuditController::class, 'index'])->name('index');
+        Route::get('/{auditLog}', [AuditController::class, 'show'])->name('show');
+        Route::get('/export/csv', [AuditController::class, 'export'])->name('export');
+    });
+
+    // Rutas de administración de tipos de documentos
+    Route::prefix('admin/document-types')->name('admin.document-types.')->middleware('can:manage.users')->group(function () {
+        Route::get('/', [Admin\DocumentTypeController::class, 'index'])->name('index');
+        Route::get('/create', [Admin\DocumentTypeController::class, 'create'])->name('create');
+        Route::post('/', [Admin\DocumentTypeController::class, 'store'])->name('store');
+        Route::get('/{documentType}', [Admin\DocumentTypeController::class, 'show'])->name('show');
+        Route::get('/{documentType}/edit', [Admin\DocumentTypeController::class, 'edit'])->name('edit');
+        Route::put('/{documentType}', [Admin\DocumentTypeController::class, 'update'])->name('update');
+        Route::delete('/{documentType}', [Admin\DocumentTypeController::class, 'destroy'])->name('destroy');
     });
 });
 

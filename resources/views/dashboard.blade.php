@@ -47,10 +47,26 @@
                         @can('view.reports')
                         <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
                             <h4 class="text-lg font-medium text-purple-900 mb-2">Reportes</h4>
-                            <p class="text-sm text-purple-700 mb-4">Consulta reportes y estadísticas</p>
-                            <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-sm opacity-50 cursor-not-allowed">
-                                Reportes (Próximamente)
-                            </button>
+                            <p class="text-sm text-purple-700 mb-4">Métricas y análisis del sistema</p>
+                            <div class="space-y-2">
+                                <a href="{{ route('reports.index') }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-sm block text-center">
+                                    Ver Reportes
+                                </a>
+                                <a href="{{ route('audit.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm block text-center">
+                                    Auditoría
+                                </a>
+                            </div>
+                        </div>
+                        @endcan
+
+                        <!-- Administración de Tipos -->
+                        @can('manage.users')
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+                            <h4 class="text-lg font-medium text-indigo-900 mb-2">Tipos de Documentos</h4>
+                            <p class="text-sm text-indigo-700 mb-4">Configurar tipos de documentos</p>
+                            <a href="{{ route('admin.document-types.index') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                Gestionar Tipos
+                            </a>
                         </div>
                         @endcan
                     </div>
