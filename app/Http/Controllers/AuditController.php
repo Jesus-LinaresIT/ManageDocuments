@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class AuditController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
         $this->authorize('view.reports');
@@ -69,7 +71,7 @@ class AuditController extends Controller
         $auditLogs = $query->orderBy('created_at', 'desc')->get();
 
         $filename = 'audit_log_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
@@ -77,10 +79,10 @@ class AuditController extends Controller
 
         $callback = function() use ($auditLogs) {
             $file = fopen('php://output', 'w');
-            
+
             // Headers
             fputcsv($file, ['Fecha', 'Usuario', 'Acción', 'Metadatos']);
-            
+
             // Data
             foreach ($auditLogs as $log) {
                 fputcsv($file, [
@@ -90,7 +92,7 @@ class AuditController extends Controller
                     json_encode($log->meta)
                 ]);
             }
-            
+
             fclose($file);
         };
 

@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DocumentTypeController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AuditController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('projects', ProjectController::class)->only(['index', 'create', 'store', 'show']);
     Route::get('projects/{project}/docs', [DocumentController::class, 'index'])->name('projects.docs');
     Route::post('projects/{project}/docs/{documentType}/upload', [DocumentController::class, 'upload'])->name('projects.docs.upload');
+    Route::get('documents/{documentVersion}/download', [DocumentController::class, 'download'])->name('documents.download');
 
     // Rutas de administración (solo administradores)
     Route::prefix('admin')
@@ -57,13 +61,13 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de administración de tipos de documentos
     Route::prefix('admin/document-types')->name('admin.document-types.')->middleware('can:manage.users')->group(function () {
-        Route::get('/', [Admin\DocumentTypeController::class, 'index'])->name('index');
-        Route::get('/create', [Admin\DocumentTypeController::class, 'create'])->name('create');
-        Route::post('/', [Admin\DocumentTypeController::class, 'store'])->name('store');
-        Route::get('/{documentType}', [Admin\DocumentTypeController::class, 'show'])->name('show');
-        Route::get('/{documentType}/edit', [Admin\DocumentTypeController::class, 'edit'])->name('edit');
-        Route::put('/{documentType}', [Admin\DocumentTypeController::class, 'update'])->name('update');
-        Route::delete('/{documentType}', [Admin\DocumentTypeController::class, 'destroy'])->name('destroy');
+        Route::get('/', [DocumentTypeController::class, 'index'])->name('index');
+        Route::get('/create', [DocumentTypeController::class, 'create'])->name('create');
+        Route::post('/', [DocumentTypeController::class, 'store'])->name('store');
+        Route::get('/{documentType}', [DocumentTypeController::class, 'show'])->name('show');
+        Route::get('/{documentType}/edit', [DocumentTypeController::class, 'edit'])->name('edit');
+        Route::put('/{documentType}', [DocumentTypeController::class, 'update'])->name('update');
+        Route::delete('/{documentType}', [DocumentTypeController::class, 'destroy'])->name('destroy');
     });
 });
 

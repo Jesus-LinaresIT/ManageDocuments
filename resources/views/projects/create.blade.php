@@ -37,8 +37,14 @@
 
                             <div>
                                 <label for="unit" class="block text-sm font-medium text-gray-700">Unidad</label>
-                                <input type="text" name="unit" id="unit" value="{{ old('unit') }}" 
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                                <select name="unit" id="unit" 
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                                    <option value="">Seleccionar unidad</option>
+                                    <option value="FICA" {{ old('unit') == 'FICA' ? 'selected' : '' }}>FICA</option>
+                                    <option value="FACE" {{ old('unit') == 'FACE' ? 'selected' : '' }}>FACE</option>
+                                    <option value="FADE" {{ old('unit') == 'FADE' ? 'selected' : '' }}>FADE</option>
+                                    <option value="FACS" {{ old('unit') == 'FACS' ? 'selected' : '' }}>FACS</option>
+                                </select>
                             </div>
 
                             <div>

@@ -110,4 +110,53 @@ class DocumentController extends Controller
 
         return back()->with('success', 'Documento subido exitosamente.');
     }
+
+    public function download(DocumentVersion $documentVersion)
+    {
+        // Verificar que el archivo existe
+        if (!Storage::disk('public')->exists($documentVersion->path)) {
+            abort(404, 'Archivo no encontrado.');
+        }
+
+        // Verificar permisos - solo el docente del proyecto o revisores asignados pueden descargar
+        $documentVersion->load('projectDocument.project');
+        $project = $documentVersion->projectDocument->project;
+        $user = Auth::user();
+        
+        $canDownload = false;
+        
+        // El docente del proyecto puede descargar
+        if ($user->id === $project->teacher_id) {
+            $canDownload = true;
+        }
+        
+        // Los revisores asignados pueden descargar
+        if ($user->id === $project->rev_academic_id || $user->id === $project->rev_social_id) {
+            $canDownload = true;
+        }
+        
+        // Los administradores pueden descargar
+        if ($user->hasRole('Administrador')) {
+            $canDownload = true;
+        }
+        
+        if (!$canDownload) {
+            abort(403, 'No tienes permisos para descargar este archivo.');
+        }
+
+        // Log de auditoría
+        AuditLog::create([
+            'user_id' => $user->id,
+            'action' => 'document.downloaded',
+            'meta' => [
+                'project_document_id' => $documentVersion->project_document_id,
+                'project_id' => $project->id,
+                'version' => $documentVersion->version,
+                'file_name' => $documentVersion->original_name,
+            ]
+        ]);
+
+        // Descargar con nombre original
+        return Storage::disk('public')->download($documentVersion->path, $documentVersion->original_name);
+    }
 }

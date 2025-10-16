@@ -15,31 +15,31 @@ class DocumentTypesSeeder extends Seeder
     {
         $documentTypes = [
             [
-                'name' => 'Propuesta de Proyecto',
+                'name' => 'Perfil del proyecto',
                 'sequence' => 1,
                 'allowed_mime' => ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                 'max_mb' => 20
             ],
             [
-                'name' => 'Plan de Trabajo',
+                'name' => 'Informe de seguimiento',
                 'sequence' => 2,
                 'allowed_mime' => ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                 'max_mb' => 20
             ],
             [
-                'name' => 'Informe de Avance',
+                'name' => 'Requerimiento de transporte',
                 'sequence' => 3,
                 'allowed_mime' => ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                 'max_mb' => 20
             ],
             [
-                'name' => 'Informe Final',
+                'name' => 'Entrega de chalecos de proyección social',
                 'sequence' => 4,
                 'allowed_mime' => ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                 'max_mb' => 20
             ],
             [
-                'name' => 'Evidencias',
+                'name' => 'Requerimiento de compra de materiales',
                 'sequence' => 5,
                 'allowed_mime' => ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                 'max_mb' => 20

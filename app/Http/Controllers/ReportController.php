@@ -9,8 +9,11 @@ use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class ReportController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
         $this->authorize('view.reports');
@@ -29,7 +32,7 @@ class ReportController extends Controller
             $approvedCount = $project->projectDocuments->count();
             $totalDocuments = 5; // Total esperado de documentos por proyecto
             $progress = $totalDocuments > 0 ? ($approvedCount / $totalDocuments) * 100 : 0;
-            
+
             return [
                 'project' => $project,
                 'approved_count' => $approvedCount,

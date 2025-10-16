@@ -42,7 +42,7 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'period' => 'required|string|max:255',
-            'unit' => 'required|string|max:255',
+            'unit' => 'required|string|in:FICA,FACE,FADE,FACS',
             'target_date' => 'required|date',
             'teacher_id' => 'required|exists:users,id',
             'rev_academic_id' => 'required|exists:users,id',

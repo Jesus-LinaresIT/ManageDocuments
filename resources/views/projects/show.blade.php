@@ -20,20 +20,6 @@
                         <p class="text-sm text-gray-500">Período: {{ $project->period }} | Unidad: {{ $project->unit }}</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-gray-50 p-4 rounded">
-                            <h4 class="font-medium text-gray-900">Docente</h4>
-                            <p class="text-sm text-gray-600">{{ $project->teacher->name }}</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded">
-                            <h4 class="font-medium text-gray-900">Revisor Académico</h4>
-                            <p class="text-sm text-gray-600">{{ $project->revAcademic->name }}</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded">
-                            <h4 class="font-medium text-gray-900">Revisor Social</h4>
-                            <p class="text-sm text-gray-600">{{ $project->revSocial->name }}</p>
-                        </div>
-                    </div>
 
                     <div class="mb-6">
                         <h4 class="text-lg font-medium mb-4">Estado de Documentos</h4>
@@ -96,9 +82,14 @@
                     </div>
 
                     <div class="flex justify-between">
-                        <a href="{{ route('projects.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                            Volver a Proyectos
-                        </a>
+                        <div class="space-x-2">
+                            <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                Volver al Dashboard
+                            </a>
+                            <a href="{{ route('projects.index') }}" class="bg-gray-400 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                                Volver a Proyectos
+                            </a>
+                        </div>
                         @if(auth()->user()->id === $project->teacher_id)
                             <a href="{{ route('projects.docs', $project) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Gestionar Documentos

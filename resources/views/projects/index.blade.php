@@ -73,6 +73,12 @@
                             <p class="text-gray-500">No hay proyectos disponibles.</p>
                         </div>
                     @endif
+
+                    <div class="mt-6">
+                        <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                            Volver al Dashboard
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

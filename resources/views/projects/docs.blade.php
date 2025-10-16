@@ -124,9 +124,8 @@
                                                     </div>
                                                     <div class="flex space-x-2">
                                                         <span class="text-xs text-gray-500">{{ $version->created_at->format('d/m/Y H:i') }}</span>
-                                                        <a href="{{ Storage::url($version->path) }}" 
-                                                           class="text-blue-600 hover:text-blue-800 text-xs" 
-                                                           target="_blank">Descargar</a>
+                                                        <a href="{{ route('documents.download', $version) }}" 
+                                                           class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -137,8 +136,11 @@
                         @endforeach
                     </div>
 
-                    <div class="mt-6">
-                        <a href="{{ route('projects.show', $project) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    <div class="mt-6 flex space-x-2">
+                        <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                            Volver al Dashboard
+                        </a>
+                        <a href="{{ route('projects.show', $project) }}" class="bg-gray-400 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
                             Volver al Proyecto
                         </a>
                     </div>

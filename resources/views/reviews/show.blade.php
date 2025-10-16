@@ -92,9 +92,8 @@
                                         </div>
                                         <div class="flex space-x-2">
                                             <span class="text-xs text-gray-500">{{ $version->created_at->format('d/m/Y H:i') }}</span>
-                                            <a href="{{ Storage::url($version->path) }}" 
-                                               class="text-blue-600 hover:text-blue-800 text-xs" 
-                                               target="_blank">Descargar</a>
+                                            <a href="{{ route('documents.download', $version) }}" 
+                                               class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
                                         </div>
                                     </div>
                                 @endforeach

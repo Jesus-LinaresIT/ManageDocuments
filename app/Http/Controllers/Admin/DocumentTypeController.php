@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use App\Models\DocumentType;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;

@@ -20,4 +20,9 @@ class DocumentVersion extends Model
     {
         return $this->belongsTo(ProjectDocument::class);
     }
+
+    public function project()
+    {
+        return $this->projectDocument->project();
+    }
 }
