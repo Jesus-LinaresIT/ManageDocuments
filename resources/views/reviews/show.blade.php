@@ -61,7 +61,7 @@
                                         'denied' => 'Denegado',
                                     ];
                                 @endphp
-                                <strong>Estado:</strong> 
+                                <strong>Estado:</strong>
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusColors[$projectDocument->status] }}">
                                     {{ $statusLabels[$projectDocument->status] }}
                                 </span><br>
@@ -92,7 +92,7 @@
                                         </div>
                                         <div class="flex space-x-2">
                                             <span class="text-xs text-gray-500">{{ $version->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
-                                            <a href="{{ route('documents.download', $version) }}" 
+                                            <a href="{{ route('documents.download', $version) }}"
                                                class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
                                         </div>
                                     </div>
@@ -132,7 +132,7 @@
                     <!-- Formularios de revisión -->
                     <div class="bg-blue-50 p-6 rounded-lg">
                         <h4 class="text-lg font-medium text-blue-900 mb-4">Decisión de Revisión</h4>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Aprobar -->
                             <form action="{{ route('reviews.approve', $projectDocument) }}" method="POST">
@@ -143,11 +143,11 @@
                                         <label for="approve_observation" class="block text-sm font-medium text-gray-700 mb-1">
                                             Observaciones (opcional)
                                         </label>
-                                        <textarea name="observation" id="approve_observation" rows="3" 
+                                        <textarea name="observation" id="approve_observation" rows="3"
                                                   class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                                   placeholder="Comentarios adicionales sobre la aprobación..."></textarea>
                                     </div>
-                                    <button type="submit" 
+                                    <button type="submit"
                                             class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
                                             onclick="return confirm('¿Estás seguro de aprobar este documento?')">
                                         Aprobar Documento
@@ -158,21 +158,20 @@
                             <!-- Denegar -->
                             <form action="{{ route('reviews.deny', $projectDocument) }}" method="POST">
                                 @csrf
-                                <div class="mb-3 rounded-md border border-red-200 bg-red-50 text-red-800 px-3 py-2">
-                                    <h5 class="font-medium text-red-900 mb-2">Denegar Documento (observación obligatoria)</h5>
-                                </div>
+
                                 <div class="bg-red-50 p-4 rounded border border-red-200">
+                                    <h5 class="font-medium text-red-900 mb-2">Denegar Documento (observación obligatoria)</h5>
                                     <div class="mb-3">
                                         <label for="deny_observation" class="block text-sm font-medium text-gray-800 mb-1">
                                             Observaciones (obligatorio)
                                         </label>
                                         <textarea name="observation" id="deny_observation" rows="3" required
-                                                  class="mt-1 block w-full rounded-md border-gray-300 focus:border-red-500 focus:ring-red-500"
+                                                  class="w-full rounded-md border-gray-300 focus:border-red-500 focus:ring-red-500"
                                                   placeholder="Explica las razones de la denegación..."></textarea>
                                     </div>
-                                    <button type="submit" 
-                                            class="inline-flex items-center px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 font-medium w-full"
-                                            onclick="return confirm('¿Estás seguro de denegar este documento?')">
+                                     <button type="submit"
+                                            class="bg-red-600 hover:red-600-700 text-white font-bold py-2 px-4 rounded w-full"
+                                            onclick="return confirm('¿Estás seguro de aprobar este documento?')">
                                         Denegar Documento
                                     </button>
                                 </div>

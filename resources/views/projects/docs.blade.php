@@ -33,8 +33,8 @@
                                     <div>
                                         <h4 class="text-lg font-medium">{{ $projectDocument->documentType->name }}</h4>
                                         <p class="text-sm text-gray-500">
-                                            Secuencia: {{ $projectDocument->documentType->sequence }} | 
-                                            Tipos permitidos: PDF, DOCX | 
+                                            Secuencia: {{ $projectDocument->documentType->sequence }} |
+                                            Tipos permitidos: PDF, DOCX |
                                             Tamaño máximo: {{ $projectDocument->documentType->max_mb }}MB
                                         </p>
                                     </div>
@@ -78,7 +78,7 @@
                                         $previousProjectDocument = \App\Models\ProjectDocument::where('project_id', $project->id)
                                             ->where('document_type_id', $previousDocumentType->id)
                                             ->first();
-                                        
+
                                         if (!$previousProjectDocument || $previousProjectDocument->status !== 'approved') {
                                             $isBlocked = true;
                                             $blockReason = "Debes completar y aprobar el documento anterior ({$previousDocumentType->name}) antes de subir este documento.";
@@ -95,14 +95,14 @@
                                 @endif
 
                                 <!-- Formulario de carga -->
-                                <form action="{{ route('projects.docs.upload', [$project, $projectDocument->documentType]) }}" 
+                                <form action="{{ route('projects.docs.upload', [$project, $projectDocument->documentType]) }}"
                                       method="POST" enctype="multipart/form-data" class="mb-4">
                                     @csrf
                                     <div class="flex items-center space-x-4">
-                                        <input type="file" name="file" accept=".pdf,.docx" 
+                                        <input type="file" name="file" accept=".pdf,.docx"
                                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                                {{ $isBlocked ? 'disabled' : '' }}>
-                                        <button type="submit" 
+                                        <button type="submit"
                                                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded {{ $isBlocked ? 'opacity-50 cursor-not-allowed' : '' }}"
                                                 {{ $isBlocked ? 'disabled' : '' }}>
                                             {{ $projectDocument->documentVersions->count() > 0 ? 'Reintentar' : 'Subir' }}
@@ -124,7 +124,7 @@
                                                     </div>
                                                     <div class="flex space-x-2">
                                                         <span class="text-xs text-gray-500">{{ $version->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
-                                                        <a href="{{ route('documents.download', $version) }}" 
+                                                        <a href="{{ route('documents.download', $version) }}"
                                                            class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
                                                     </div>
                                                 </div>

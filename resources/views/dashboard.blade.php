@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-medium mb-6">Sistema de Gestión Documental - FICA/UTEC</h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Proyectos -->
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
@@ -64,9 +64,9 @@
                         <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
                             <h4 class="text-lg font-medium text-indigo-900 mb-2">Tipos de Documentos</h4>
                             <p class="text-sm text-indigo-700 mb-4">Configurar tipos de documentos</p>
-                            <a href="{{ route('admin.document-types.index') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm">
-                                Gestionar Tipos
-                            </a>
+                            <a href="{{ route('admin.document-types.index') }}" class="bg-blue-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-sm block text-center">
+                                    Ver Reportes
+                                </a>
                         </div>
                         @endcan
                     </div>
@@ -76,7 +76,7 @@
                         <p class="text-sm text-gray-600">
                             <strong>Nombre:</strong> {{ auth()->user()->name }}<br>
                             <strong>Email:</strong> {{ auth()->user()->email }}<br>
-                            <strong>Roles:</strong> 
+                            <strong>Roles:</strong>
                             @foreach(auth()->user()->roles as $role)
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 mr-1">
                                     {{ $role->name }}
