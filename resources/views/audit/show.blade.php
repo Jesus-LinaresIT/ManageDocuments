@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900">
                     <div class="mb-6">
                         <h3 class="text-lg font-medium">Registro de Actividad #{{ $auditLog->id }}</h3>
-                        <p class="text-sm text-gray-500">{{ $auditLog->created_at->format('d/m/Y H:i:s') }}</p>
+                        <p class="text-sm text-gray-500">{{ $auditLog->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i:s') }}</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -35,7 +35,7 @@
                                 <div>
                                     <span class="text-sm font-medium text-gray-500">Fecha:</span>
                                     <span class="text-sm text-gray-900 ml-2">
-                                        {{ $auditLog->created_at->format('d/m/Y H:i:s') }}
+                                        {{ $auditLog->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i:s') }}
                                     </span>
                                 </div>
                             </div>

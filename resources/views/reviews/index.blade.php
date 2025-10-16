@@ -115,7 +115,7 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $document->updated_at->format('d/m/Y H:i') }}
+                                                {{ $document->updated_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('reviews.show', $document) }}" class="text-indigo-600 hover:text-indigo-900">

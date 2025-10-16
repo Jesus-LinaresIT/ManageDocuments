@@ -123,7 +123,7 @@
                                                         <span class="text-xs text-gray-500 ml-2">{{ number_format($version->size / 1024, 2) }} KB</span>
                                                     </div>
                                                     <div class="flex space-x-2">
-                                                        <span class="text-xs text-gray-500">{{ $version->created_at->format('d/m/Y H:i') }}</span>
+                                                        <span class="text-xs text-gray-500">{{ $version->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
                                                         <a href="{{ route('documents.download', $version) }}" 
                                                            class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
                                                     </div>

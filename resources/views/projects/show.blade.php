@@ -63,7 +63,7 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $projectDocument->updated_at->format('d/m/Y H:i') }}
+                                                {{ $projectDocument->updated_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 @if(auth()->user()->id === $project->teacher_id)

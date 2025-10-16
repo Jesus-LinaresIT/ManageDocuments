@@ -83,7 +83,7 @@
                                     @foreach($auditLogs as $log)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $log->created_at->format('d/m/Y H:i:s') }}
+                                                {{ $log->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i:s') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {{ $log->user ? $log->user->name : 'Sistema' }}

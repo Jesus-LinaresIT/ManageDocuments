@@ -55,7 +55,7 @@
                                                 {{ $project->teacher->name }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $project->target_date->format('d/m/Y') }}
+                                                {{ $project->target_date->timezone(config('app.timezone'))->format('d/m/Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('projects.show', $project) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Ver</a>

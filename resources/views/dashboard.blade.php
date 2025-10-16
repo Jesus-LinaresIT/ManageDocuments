@@ -64,7 +64,7 @@
                         <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
                             <h4 class="text-lg font-medium text-indigo-900 mb-2">Tipos de Documentos</h4>
                             <p class="text-sm text-indigo-700 mb-4">Configurar tipos de documentos</p>
-                            <a href="{{ route('admin.document-types.index') }}" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded text-sm">
+                            <a href="{{ route('admin.document-types.index') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-sm">
                                 Gestionar Tipos
                             </a>
                         </div>
