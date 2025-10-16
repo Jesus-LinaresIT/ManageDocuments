@@ -57,21 +57,26 @@ class ReviewController extends Controller
     {
         $user = Auth::user();
         
-        // Verificar permisos
+        // Verificar permisos básicos de acceso
         if ($user->hasRole('Revisor Académico')) {
             if ($projectDocument->project->rev_academic_id !== $user->id) {
-                abort(403, 'No tienes permisos para revisar este documento.');
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
             }
+            // Verificar si el documento está en un estado visible para Etapa 1
             if (!in_array($projectDocument->status, ['sent', 'denied'])) {
-                abort(403, 'Este documento no está disponible para revisión académica.');
+                return redirect()->route('reviews.index')->with('warning', 'Este documento ya no está disponible para su etapa de revisión académica.');
             }
         } elseif ($user->hasRole('Revisor Proyección Social')) {
             if ($projectDocument->project->rev_social_id !== $user->id) {
-                abort(403, 'No tienes permisos para revisar este documento.');
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
             }
+            // Verificar si el documento está en un estado visible para Etapa 2
             if ($projectDocument->status !== 'approved_stage1') {
-                abort(403, 'Este documento no está disponible para revisión de proyección social.');
+                return redirect()->route('reviews.index')->with('warning', 'Este documento ya no está disponible para su etapa de revisión de proyección social.');
             }
+        } else {
+            // Usuario sin permisos de revisión
+            return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar documentos.');
         }
 
         // Registrar visualización
@@ -171,7 +176,12 @@ class ReviewController extends Controller
             );
         }
 
-        return back()->with('success', 'Documento aprobado exitosamente.');
+        // Redirigir a la bandeja con mensaje específico según la etapa
+        if ($stage === 'stage1') {
+            return redirect()->route('reviews.index')->with('success', 'Documento aprobado en Etapa 1 (Revisión Académica).');
+        } else {
+            return redirect()->route('reviews.index')->with('success', 'Documento aprobado en Etapa 2 (Revisión de Proyección Social).');
+        }
     }
 
     public function deny(Request $request, ProjectDocument $projectDocument)
@@ -237,6 +247,11 @@ class ReviewController extends Controller
             new DocumentDeniedNotification($projectDocument, $stage, $request->observation)
         );
 
-        return back()->with('success', 'Documento denegado. El docente ha sido notificado para realizar las correcciones necesarias.');
+        // Redirigir a la bandeja con mensaje específico según la etapa
+        if ($stage === 'stage1') {
+            return redirect()->route('reviews.index')->with('success', 'Documento denegado en Etapa 1 (Revisión Académica). El docente ha sido notificado para realizar las correcciones necesarias.');
+        } else {
+            return redirect()->route('reviews.index')->with('success', 'Documento denegado en Etapa 2 (Revisión de Proyección Social). El docente ha sido notificado para realizar las correcciones necesarias.');
+        }
     }
 }

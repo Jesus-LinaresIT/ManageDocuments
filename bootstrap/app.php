@@ -14,5 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Manejar AuthorizationException para rutas de reviews
+        $exceptions->render(function (Illuminate\Auth\Access\AuthorizationException $e, $request) {
+            if ($request->is('reviews*')) {
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permiso para esa acción en el documento.');
+            }
+        });
     })->create();
