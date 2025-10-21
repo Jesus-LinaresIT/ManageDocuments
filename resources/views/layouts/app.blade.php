@@ -33,6 +33,7 @@
 
             <!-- Page Content -->
             <main>
+                <!-- @include('layouts.flash') -->
                 {{ $slot }}
             </main>
         </div>

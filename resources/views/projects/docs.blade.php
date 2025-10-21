@@ -69,33 +69,33 @@
                                     </div>
                                 @endif
 
-                                <!-- Verificar bloqueo secuencial -->
+                                <!-- Verificar bloqueo y desbloqueo de documentos -->
                                 @php
                                     $isBlocked = false;
                                     $blockReason = '';
-                                    
+
                                     // Verificar si el documento ya está aprobado definitivamente
                                     if ($projectDocument->status === 'approved') {
                                         $isBlocked = true;
                                         $blockReason = 'Este documento ya fue aprobado definitivamente y no admite nuevas cargas.';
                                     }
-                                    // Verificar bloqueo secuencial
+                                    // Verificar si el Documento 1 está aprobado para desbloquear documentos 2-5
                                     elseif ($projectDocument->documentType->sequence > 1) {
-                                        $previousDocumentType = \App\Models\DocumentType::where('sequence', $projectDocument->documentType->sequence - 1)->first();
-                                        $previousProjectDocument = \App\Models\ProjectDocument::where('project_id', $project->id)
-                                            ->where('document_type_id', $previousDocumentType->id)
+                                        $documentType1 = \App\Models\DocumentType::where('sequence', 1)->first();
+                                        $projectDocument1 = \App\Models\ProjectDocument::where('project_id', $project->id)
+                                            ->where('document_type_id', $documentType1->id)
                                             ->first();
 
-                                        if (!$previousProjectDocument || $previousProjectDocument->status !== 'approved') {
+                                        if (!$projectDocument1 || $projectDocument1->status !== 'approved') {
                                             $isBlocked = true;
-                                            $blockReason = "Debes completar y aprobar el documento anterior ({$previousDocumentType->name}) antes de subir este documento.";
+                                            $blockReason = "El Documento 1 ({$documentType1->name}) debe ser aprobado antes de poder subir otros documentos.";
                                         }
                                     }
                                 @endphp
 
                                 @if($isBlocked)
-                                    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded">
-                                        <p class="text-sm text-red-800">
+                                    <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+                                        <p class="text-sm text-green-800">
                                             <strong>Bloqueado:</strong> {{ $blockReason }}
                                         </p>
                                     </div>

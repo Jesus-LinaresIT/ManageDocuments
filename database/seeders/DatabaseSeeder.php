@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             RbacSeeder::class,
             DocumentTypesSeeder::class,
             DemoUsersSeeder::class,
+            UsersSeeder::class,
         ]);
     }
 }

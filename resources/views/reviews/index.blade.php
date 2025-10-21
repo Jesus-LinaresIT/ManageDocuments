@@ -72,7 +72,6 @@
                         </div>
                     </form>
 
-                    {{ $documents->count() }}
                     @if($documents->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">

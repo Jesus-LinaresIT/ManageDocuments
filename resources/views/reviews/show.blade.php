@@ -15,6 +15,12 @@
                         </div>
                     @endif
 
+                    @if(session('warning'))
+                        <div class="rounded-md border border-amber-200 bg-amber-50 text-amber-800 px-4 py-3">
+                            {{ session('warning') }}
+                        </div>
+                    @endif
+
                     @if($errors->any())
                         <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                             <ul>

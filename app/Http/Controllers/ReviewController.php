@@ -23,19 +23,21 @@ class ReviewController extends Controller
         // Filtrar por rol del revisor y etapa (sin filtros por creador)
         if ($user->hasRole('Coordinador de Proyección Social')) {
             // Coordinador ve documentos de Etapa 1, opcionalmente filtrados por unidad
-            $query->whereIn('status', ['sent', 'denied']);
             if ($user->unit) {
                 $query->whereHas('project', function ($q) use ($user) {
                     $q->where('unit', $user->unit);
-                });
+                })->whereIn('status', ['sent']);
+            }else{
+                $query->where('id', 0);
             }
         } elseif ($user->hasRole('Director de Proyección Social')) {
             // Director ve documentos de Etapa 2, opcionalmente filtrados por unidad
-            $query->where('status', 'approved_stage1');
             if ($user->unit) {
                 $query->whereHas('project', function ($q) use ($user) {
                     $q->where('unit', $user->unit);
-                });
+                })->where('status', ['approved_stage1']);
+            }else{
+                $query->where('id', 0);
             }
         } elseif ($user->hasRole('Administrador')) {
             // Admin puede ver todos
@@ -60,14 +62,14 @@ class ReviewController extends Controller
         }
 
         $documents = $query->orderBy('updated_at', 'desc')->paginate(10);
-        
+
         return view('reviews.index', compact('documents'));
     }
 
     public function show(ProjectDocument $projectDocument)
     {
         $user = Auth::user();
-        
+
         // Verificar permisos básicos de acceso (sin filtros por creador)
         if ($user->hasRole('Coordinador de Proyección Social')) {
             // Coordinador puede ver documentos de Etapa 1, opcionalmente filtrados por unidad
@@ -96,7 +98,7 @@ class ReviewController extends Controller
 
         // Registrar visualización
         $projectDocument->update(['viewed_at' => now()]);
-        
+
         // Log de auditoría
         AuditLog::create([
             'user_id' => $user->id,
@@ -109,7 +111,7 @@ class ReviewController extends Controller
         ]);
 
         $projectDocument->load(['project.teacher', 'documentType', 'documentVersions', 'reviews.reviewer']);
-        
+
         return view('reviews.show', compact('projectDocument'));
     }
 
@@ -189,7 +191,7 @@ class ReviewController extends Controller
             $projectDocument->project->teacher->notify(
                 new DocumentApprovedNotification($projectDocument, $stage)
             );
-            
+
             // Notificar al revisor social
             $projectDocument->project->revSocial->notify(
                 new DocumentReadyForStage2Notification($projectDocument)
@@ -288,9 +290,9 @@ class ReviewController extends Controller
 
         // Redirigir a la bandeja con mensaje específico según la etapa
         if ($stage === 'stage1') {
-            return redirect()->route('reviews.index')->with('success', 'Documento denegado en Etapa 1 (Revisión Académica). El docente ha sido notificado para realizar las correcciones necesarias.');
+            return redirect()->route('reviews.index')->with('warning', 'Documento denegado en Etapa 1 (Revisión Académica). El docente ha sido notificado para realizar las correcciones necesarias.');
         } else {
-            return redirect()->route('reviews.index')->with('success', 'Documento denegado en Etapa 2 (Revisión de Proyección Social). El docente ha sido notificado para realizar las correcciones necesarias.');
+            return redirect()->route('reviews.index')->with('warning', 'Documento denegado en Etapa 2 (Revisión de Proyección Social). El docente ha sido notificado para realizar las correcciones necesarias.');
         }
     }
 }

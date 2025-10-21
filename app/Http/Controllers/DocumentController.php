@@ -46,15 +46,16 @@ class DocumentController extends Controller
             return back()->with('error', 'Este documento ya fue aprobado definitivamente y no admite nuevas cargas.');
         }
 
-        // Verificar si el documento anterior está aprobado
+        // Verificar si el Documento 1 está aprobado para desbloquear documentos 2-5
         if ($documentType->sequence > 1) {
-            $previousDocumentType = DocumentType::where('sequence', $documentType->sequence - 1)->first();
-            $previousProjectDocument = ProjectDocument::where('project_id', $project->id)
-                ->where('document_type_id', $previousDocumentType->id)
+            // Buscar el Documento 1 (sequence = 1)
+            $documentType1 = DocumentType::where('sequence', 1)->first();
+            $projectDocument1 = ProjectDocument::where('project_id', $project->id)
+                ->where('document_type_id', $documentType1->id)
                 ->first();
 
-            if (!$previousProjectDocument || $previousProjectDocument->status !== 'approved') {
-                return back()->with('error', "Debes completar y aprobar el documento anterior ({$previousDocumentType->name}) antes de subir este documento.");
+            if (!$projectDocument1 || $projectDocument1->status !== 'approved') {
+                return back()->with('error', "El Documento 1 ({$documentType1->name}) debe ser aprobado antes de poder subir otros documentos.");
             }
         }
 
