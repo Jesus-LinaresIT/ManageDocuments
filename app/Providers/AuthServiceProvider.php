@@ -49,5 +49,22 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('view.reports', function ($user) {
             return $user->hasPermissionTo('view.reports');
         });
+
+        // Gates adicionales para autorización específica
+        Gate::define('review-stage1', function ($user) {
+            return $user->can('review.stage1');
+        });
+
+        Gate::define('review-stage2', function ($user) {
+            return $user->can('review.stage2');
+        });
+
+        Gate::define('admin', function ($user) {
+            return $user->can('manage.users') || $user->can('manage.projects');
+        });
+
+        Gate::define('view-readonly', function ($user) {
+            return $user->can('view.readonly');
+        });
     }
 }

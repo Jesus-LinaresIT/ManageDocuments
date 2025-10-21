@@ -20,18 +20,31 @@ class ReviewController extends Controller
         $query = ProjectDocument::with(['project.teacher', 'documentType', 'documentVersions'])
             ->whereHas('project');
 
-        // Filtrar por rol del revisor
+        // Filtrar por rol del revisor y etapa
         if ($user->hasRole('Coordinador de Proyección Social')) {
+            // Coordinador ve documentos de Etapa 1
             $query->whereHas('project', function ($q) use ($user) {
                 $q->where('rev_academic_id', $user->id);
+                // Filtrar por unidad si el coordinador tiene unidad asignada
+                if ($user->unit) {
+                    $q->where('unit', $user->unit);
+                }
             })->whereIn('status', ['sent', 'denied']);
         } elseif ($user->hasRole('Director de Proyección Social')) {
+            // Director ve documentos de Etapa 2
             $query->whereHas('project', function ($q) use ($user) {
                 $q->where('rev_social_id', $user->id);
+                // Filtrar por unidad si el director tiene unidad asignada
+                if ($user->unit) {
+                    $q->where('unit', $user->unit);
+                }
             })->where('status', 'approved_stage1');
-        } else {
+        } elseif ($user->hasRole('Administrador')) {
             // Admin puede ver todos
             $query->whereIn('status', ['sent', 'approved_stage1', 'denied']);
+        } else {
+            // Otros roles no pueden acceder
+            $query->where('id', 0); // Query vacío
         }
 
         // Aplicar filtros
@@ -105,27 +118,27 @@ class ReviewController extends Controller
             'observation' => 'nullable|string|max:1000',
         ]);
 
-        // Verificar permisos y estado
+        // Verificar permisos y estado usando Gates
         if ($user->hasRole('Coordinador de Proyección Social')) {
             if ($projectDocument->project->rev_academic_id !== $user->id) {
-                abort(403, 'No tienes permisos para revisar este documento.');
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
             }
             if (!in_array($projectDocument->status, ['sent', 'denied'])) {
-                abort(403, 'Este documento no está disponible para revisión académica.');
+                return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión académica.');
             }
             $stage = 'stage1';
             $newStatus = 'approved_stage1';
         } elseif ($user->hasRole('Director de Proyección Social')) {
             if ($projectDocument->project->rev_social_id !== $user->id) {
-                abort(403, 'No tienes permisos para revisar este documento.');
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
             }
             if ($projectDocument->status !== 'approved_stage1') {
-                abort(403, 'Este documento no está disponible para revisión de proyección social.');
+                return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión de proyección social.');
             }
             $stage = 'stage2';
             $newStatus = 'approved';
         } else {
-            abort(403, 'No tienes permisos para revisar documentos.');
+            return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar documentos.');
         }
 
         // Crear registro de revisión
@@ -196,22 +209,22 @@ class ReviewController extends Controller
         // Verificar permisos y estado
         if ($user->hasRole('Coordinador de Proyección Social')) {
             if ($projectDocument->project->rev_academic_id !== $user->id) {
-                abort(403, 'No tienes permisos para revisar este documento.');
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
             }
             if (!in_array($projectDocument->status, ['sent', 'denied'])) {
-                abort(403, 'Este documento no está disponible para revisión académica.');
+                return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión académica.');
             }
             $stage = 'stage1';
         } elseif ($user->hasRole('Director de Proyección Social')) {
             if ($projectDocument->project->rev_social_id !== $user->id) {
-                abort(403, 'No tienes permisos para revisar este documento.');
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
             }
             if ($projectDocument->status !== 'approved_stage1') {
-                abort(403, 'Este documento no está disponible para revisión de proyección social.');
+                return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión de proyección social.');
             }
             $stage = 'stage2';
         } else {
-            abort(403, 'No tienes permisos para revisar documentos.');
+            return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar documentos.');
         }
 
         // Crear registro de revisión

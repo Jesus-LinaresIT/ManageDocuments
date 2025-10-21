@@ -16,13 +16,18 @@ class ProjectController extends Controller
         $user = Auth::user();
         
         if ($user->hasRole('Administrador')) {
-            $projects = Project::with(['teacher', 'revAcademic', 'revSocial'])->get();
+            $projects = Project::with(['teacher', 'revAcademic', 'revSocial'])->latest()->paginate(15);
+        } elseif ($user->hasRole('Coordinador de Proyección Social') || $user->hasRole('Decano/a')) {
+            $unit = $user->unit ?? null; // Obtener unidad del usuario
+            $query = Project::with(['teacher', 'revAcademic', 'revSocial'])->latest();
+            $projects = $unit ? $query->where('unit', $unit)->paginate(15) : $query->paginate(15);
+        } elseif ($user->hasRole('Director de Proyección Social')) {
+            $projects = Project::with(['teacher', 'revAcademic', 'revSocial'])->latest()->paginate(15);
         } else {
+            // Docente: solo sus proyectos
             $projects = Project::where('teacher_id', $user->id)
-                ->orWhere('rev_academic_id', $user->id)
-                ->orWhere('rev_social_id', $user->id)
                 ->with(['teacher', 'revAcademic', 'revSocial'])
-                ->get();
+                ->latest()->paginate(15);
         }
 
         return view('projects.index', compact('projects'));
@@ -89,6 +94,28 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
+        $user = Auth::user();
+        
+        // Autorizar acceso según rol
+        if ($user->hasRole('Administrador')) {
+            // Admin puede ver todos
+        } elseif ($user->hasRole('Coordinador de Proyección Social') || $user->hasRole('Decano/a')) {
+            // Coordinador y Decano pueden ver proyectos de su unidad
+            $unit = $user->unit ?? null;
+            if ($unit && $project->unit !== $unit) {
+                abort(403, 'No tienes permisos para ver este proyecto.');
+            }
+        } elseif ($user->hasRole('Director de Proyección Social')) {
+            // Director puede ver todos
+        } elseif ($user->hasRole('Docente')) {
+            // Docente solo puede ver sus propios proyectos
+            if ($project->teacher_id !== $user->id) {
+                abort(403, 'No tienes permisos para ver este proyecto.');
+            }
+        } else {
+            abort(403, 'No tienes permisos para ver proyectos.');
+        }
+        
         $project->load(['teacher', 'revAcademic', 'revSocial', 'projectDocuments.documentType']);
         
         return view('projects.show', compact('project'));
