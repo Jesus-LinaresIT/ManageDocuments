@@ -40,10 +40,10 @@
                                 <select name="unit" id="unit" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                                     <option value="">Seleccionar unidad</option>
-                                    <option value="FICA" {{ old('unit') == 'FICA' ? 'selected' : '' }}>FICA</option>
-                                    <option value="FACE" {{ old('unit') == 'FACE' ? 'selected' : '' }}>FACE</option>
-                                    <option value="FADE" {{ old('unit') == 'FADE' ? 'selected' : '' }}>FADE</option>
-                                    <option value="FACS" {{ old('unit') == 'FACS' ? 'selected' : '' }}>FACS</option>
+                                    <option value="FICA" {{ (old('unit') ?? $preloadedData['unit'] ?? '') == 'FICA' ? 'selected' : '' }}>FICA</option>
+                                    <option value="FACE" {{ (old('unit') ?? $preloadedData['unit'] ?? '') == 'FACE' ? 'selected' : '' }}>FACE</option>
+                                    <option value="FADE" {{ (old('unit') ?? $preloadedData['unit'] ?? '') == 'FADE' ? 'selected' : '' }}>FADE</option>
+                                    <option value="FACS" {{ (old('unit') ?? $preloadedData['unit'] ?? '') == 'FACS' ? 'selected' : '' }}>FACS</option>
                                 </select>
                             </div>
 
@@ -67,12 +67,12 @@
                             </div>
 
                             <div>
-                                <label for="rev_academic_id" class="block text-sm font-medium text-gray-700">Revisor Académico</label>
+                                <label for="rev_academic_id" class="block text-sm font-medium text-gray-700">Coordinador de Proyección Social</label>
                                 <select name="rev_academic_id" id="rev_academic_id" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                                     <option value="">Seleccionar revisor académico</option>
                                     @foreach($academicReviewers as $reviewer)
-                                        <option value="{{ $reviewer->id }}" {{ old('rev_academic_id') == $reviewer->id ? 'selected' : '' }}>
+                                        <option value="{{ $reviewer->id }}" {{ (old('rev_academic_id') ?? $preloadedData['rev_academic_id'] ?? '') == $reviewer->id ? 'selected' : '' }}>
                                             {{ $reviewer->name }}
                                         </option>
                                     @endforeach
@@ -80,12 +80,12 @@
                             </div>
 
                             <div>
-                                <label for="rev_social_id" class="block text-sm font-medium text-gray-700">Revisor Proyección Social</label>
+                                <label for="rev_social_id" class="block text-sm font-medium text-gray-700">Director de Proyección Social</label>
                                 <select name="rev_social_id" id="rev_social_id" 
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
                                     <option value="">Seleccionar revisor social</option>
                                     @foreach($socialReviewers as $reviewer)
-                                        <option value="{{ $reviewer->id }}" {{ old('rev_social_id') == $reviewer->id ? 'selected' : '' }}>
+                                        <option value="{{ $reviewer->id }}" {{ (old('rev_social_id') ?? $preloadedData['rev_social_id'] ?? '') == $reviewer->id ? 'selected' : '' }}>
                                             {{ $reviewer->name }}
                                         </option>
                                     @endforeach

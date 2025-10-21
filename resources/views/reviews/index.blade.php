@@ -18,9 +18,9 @@
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-medium">Documentos Pendientes de Revisión</h3>
                         <div class="text-sm text-gray-500">
-                            @if(auth()->user()->hasRole('Revisor Académico'))
+                            @if(auth()->user()->hasRole('Coordinador de Proyección Social'))
                                 Etapa 1 - Revisión Académica
-                            @elseif(auth()->user()->hasRole('Revisor Proyección Social'))
+                            @elseif(auth()->user()->hasRole('Director de Proyección Social'))
                                 Etapa 2 - Revisión de Proyección Social
                             @else
                                 Todas las Etapas

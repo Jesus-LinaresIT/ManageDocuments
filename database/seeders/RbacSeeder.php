@@ -18,9 +18,9 @@ class RbacSeeder extends Seeder
         $permissions = [
             'manage.users',
             'manage.projects',
+            'upload.documents',
             'review.stage1',
             'review.stage2',
-            'upload.documents',
             'view.readonly',
             'view.reports'
         ];
@@ -32,15 +32,15 @@ class RbacSeeder extends Seeder
         // Crear roles
         $adminRole = Role::create(['name' => 'Administrador']);
         $teacherRole = Role::create(['name' => 'Docente']);
-        $academicReviewerRole = Role::create(['name' => 'Revisor Académico']);
-        $socialReviewerRole = Role::create(['name' => 'Revisor Proyección Social']);
-        $observerRole = Role::create(['name' => 'Observador']);
+        $coordinatorRole = Role::create(['name' => 'Coordinador de Proyección Social']);
+        $directorRole = Role::create(['name' => 'Director de Proyección Social']);
+        $deanRole = Role::create(['name' => 'Decano/a']);
 
         // Asignar permisos a roles
         $adminRole->givePermissionTo($permissions);
         $teacherRole->givePermissionTo(['upload.documents']);
-        $academicReviewerRole->givePermissionTo(['review.stage1']);
-        $socialReviewerRole->givePermissionTo(['review.stage2']);
-        $observerRole->givePermissionTo(['view.readonly', 'view.reports']);
+        $coordinatorRole->givePermissionTo(['manage.projects', 'review.stage1', 'upload.documents']);
+        $directorRole->givePermissionTo(['review.stage2', 'view.reports']);
+        $deanRole->givePermissionTo(['view.readonly', 'view.reports']);
     }
 }

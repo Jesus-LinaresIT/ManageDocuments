@@ -5,11 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Sistema FICA - UTEC') }}</title>
+        <title>Proyección Social - UTEC</title>
 
         <!-- Favicon -->
-        <link rel="icon" type="image/png" href="{{ asset('images/utec-logo.png') }}">
-        <link rel="shortcut icon" type="image/png" href="{{ asset('images/utec-logo.png') }}">
+        <link rel="icon" type="image/jpeg" href="{{ asset('images/utec-logo.jpg') }}">
+        <link rel="shortcut icon" type="image/jpeg" href="{{ asset('images/utec-logo.jpg') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

@@ -73,7 +73,14 @@
                                 @php
                                     $isBlocked = false;
                                     $blockReason = '';
-                                    if ($projectDocument->documentType->sequence > 1) {
+                                    
+                                    // Verificar si el documento ya está aprobado definitivamente
+                                    if ($projectDocument->status === 'approved') {
+                                        $isBlocked = true;
+                                        $blockReason = 'Este documento ya fue aprobado definitivamente y no admite nuevas cargas.';
+                                    }
+                                    // Verificar bloqueo secuencial
+                                    elseif ($projectDocument->documentType->sequence > 1) {
                                         $previousDocumentType = \App\Models\DocumentType::where('sequence', $projectDocument->documentType->sequence - 1)->first();
                                         $previousProjectDocument = \App\Models\ProjectDocument::where('project_id', $project->id)
                                             ->where('document_type_id', $previousDocumentType->id)

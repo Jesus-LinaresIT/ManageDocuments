@@ -41,6 +41,11 @@ class DocumentController extends Controller
             return back()->with('error', 'Documento no encontrado.');
         }
 
+        // Verificar si el documento ya está aprobado definitivamente
+        if ($projectDocument->status === 'approved') {
+            return back()->with('error', 'Este documento ya fue aprobado definitivamente y no admite nuevas cargas.');
+        }
+
         // Verificar si el documento anterior está aprobado
         if ($documentType->sequence > 1) {
             $previousDocumentType = DocumentType::where('sequence', $documentType->sequence - 1)->first();

@@ -16,9 +16,16 @@
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
                             <h4 class="text-lg font-medium text-blue-900 mb-2">Proyectos</h4>
                             <p class="text-sm text-blue-700 mb-4">Gestiona tus proyectos de proyección social</p>
-                            <a href="{{ route('projects.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
-                                Ver Proyectos
-                            </a>
+                            <div class="space-y-2">
+                                <a href="{{ route('projects.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm block text-center">
+                                    Ver Proyectos
+                                </a>
+                                @can('manage.projects')
+                                <a href="{{ route('projects.create') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm block text-center">
+                                    Crear Proyecto
+                                </a>
+                                @endcan
+                            </div>
                         </div>
 
                         <!-- Administración -->

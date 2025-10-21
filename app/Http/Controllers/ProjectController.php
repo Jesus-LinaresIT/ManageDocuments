@@ -31,10 +31,22 @@ class ProjectController extends Controller
     public function create()
     {
         $teachers = User::role('Docente')->get();
-        $academicReviewers = User::role('Revisor Académico')->get();
-        $socialReviewers = User::role('Revisor Proyección Social')->get();
+        $academicReviewers = User::role('Coordinador de Proyección Social')->get();
+        $socialReviewers = User::role('Director de Proyección Social')->get();
+        
+        $user = Auth::user();
+        $preloadedData = null;
+        
+        // Si es Coordinador, precargar datos
+        if ($user->hasRole('Coordinador de Proyección Social')) {
+            $preloadedData = [
+                'unit' => $user->unit ?? 'FICA', // Usar unidad del coordinador
+                'rev_academic_id' => $user->id, // El coordinador es el revisor académico
+                'rev_social_id' => User::role('Director de Proyección Social')->first()?->id ?? null
+            ];
+        }
 
-        return view('projects.create', compact('teachers', 'academicReviewers', 'socialReviewers'));
+        return view('projects.create', compact('teachers', 'academicReviewers', 'socialReviewers', 'preloadedData'));
     }
 
     public function store(Request $request)
