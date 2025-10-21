@@ -81,22 +81,48 @@ class UsersSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            $user = User::create([
-                'name' => $userData['name'],
-                'email' => $userData['email'],
-                'password' => $userData['password'],
-            ]);
+            // Verificar si el usuario ya existe
+            $existingUser = User::where('email', $userData['email'])->first();
+            
+            if ($existingUser) {
+                // Actualizar datos del usuario existente
+                $existingUser->update([
+                    'name' => $userData['name'],
+                    'password' => $userData['password'],
+                ]);
+                
+                // Asignar rol si no lo tiene
+                if (!$existingUser->hasRole($userData['role'])) {
+                    $role = Role::where('name', $userData['role'])->first();
+                    if ($role) {
+                        $existingUser->assignRole($role);
+                    }
+                }
+                
+                // Agregar unidad si existe
+                if (isset($userData['unit'])) {
+                    $existingUser->unit = $userData['unit'];
+                    $existingUser->save();
+                }
+            } else {
+                // Crear nuevo usuario
+                $user = User::create([
+                    'name' => $userData['name'],
+                    'email' => $userData['email'],
+                    'password' => $userData['password'],
+                ]);
 
-            // Asignar rol
-            $role = Role::where('name', $userData['role'])->first();
-            if ($role) {
-                $user->assignRole($role);
-            }
+                // Asignar rol
+                $role = Role::where('name', $userData['role'])->first();
+                if ($role) {
+                    $user->assignRole($role);
+                }
 
-            // Agregar unidad si existe
-            if (isset($userData['unit'])) {
-                $user->unit = $userData['unit'];
-                $user->save();
+                // Agregar unidad si existe
+                if (isset($userData['unit'])) {
+                    $user->unit = $userData['unit'];
+                    $user->save();
+                }
             }
         }
     }

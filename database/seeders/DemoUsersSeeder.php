@@ -38,14 +38,14 @@ class DemoUsersSeeder extends Seeder
             'email' => 'maria.gonzalez@fica.edu.sv',
             'password' => Hash::make('password'),
         ]);
-        $academicReviewer->assignRole('Revisor Académico');
+        $academicReviewer->assignRole('Coordinador de Proyección Social');
 
         $socialReviewer = User::create([
             'name' => 'Lic. Carlos Rodríguez',
             'email' => 'carlos.rodriguez@fica.edu.sv',
             'password' => Hash::make('password'),
         ]);
-        $socialReviewer->assignRole('Revisor Proyección Social');
+        $socialReviewer->assignRole('Director de Proyección Social');
 
         // Crear proyecto demo
         $project = Project::create([
