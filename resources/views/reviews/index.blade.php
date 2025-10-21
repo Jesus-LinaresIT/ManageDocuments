@@ -53,12 +53,12 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Desde</label>
-                                <input type="date" name="date_from" value="{{ request('date_from') }}" 
+                                <input type="date" name="date_from" value="{{ request('date_from') }}"
                                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Hasta</label>
-                                <input type="date" name="date_to" value="{{ request('date_to') }}" 
+                                <input type="date" name="date_to" value="{{ request('date_to') }}"
                                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
@@ -72,6 +72,7 @@
                         </div>
                     </form>
 
+                    {{ $documents->count() }}
                     @if($documents->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">

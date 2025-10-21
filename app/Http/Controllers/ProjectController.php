@@ -14,20 +14,18 @@ class ProjectController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
-        if ($user->hasRole('Administrador')) {
-            $projects = Project::with(['teacher', 'revAcademic', 'revSocial'])->latest()->paginate(15);
+        $query = Project::with(['teacher', 'revAcademic', 'revSocial'])->latest();
+
+        if ($user->hasRole('Administrador') || $user->hasRole('Director de Proyección Social')) {
+            // Admin y Director ven todos los proyectos
+            $projects = $query->paginate(15);
         } elseif ($user->hasRole('Coordinador de Proyección Social') || $user->hasRole('Decano/a')) {
-            $unit = $user->unit ?? null; // Obtener unidad del usuario
-            $query = Project::with(['teacher', 'revAcademic', 'revSocial'])->latest();
+            // Coordinador y Decano ven todos los proyectos, opcionalmente filtrados por unidad
+            $unit = $user->unit ?? null;
             $projects = $unit ? $query->where('unit', $unit)->paginate(15) : $query->paginate(15);
-        } elseif ($user->hasRole('Director de Proyección Social')) {
-            $projects = Project::with(['teacher', 'revAcademic', 'revSocial'])->latest()->paginate(15);
         } else {
             // Docente: solo sus proyectos
-            $projects = Project::where('teacher_id', $user->id)
-                ->with(['teacher', 'revAcademic', 'revSocial'])
-                ->latest()->paginate(15);
+            $projects = $query->where('teacher_id', $user->id)->paginate(15);
         }
 
         return view('projects.index', compact('projects'));

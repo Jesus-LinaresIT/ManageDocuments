@@ -20,25 +20,23 @@ class ReviewController extends Controller
         $query = ProjectDocument::with(['project.teacher', 'documentType', 'documentVersions'])
             ->whereHas('project');
 
-        // Filtrar por rol del revisor y etapa
+        // Filtrar por rol del revisor y etapa (sin filtros por creador)
         if ($user->hasRole('Coordinador de Proyección Social')) {
-            // Coordinador ve documentos de Etapa 1
-            $query->whereHas('project', function ($q) use ($user) {
-                $q->where('rev_academic_id', $user->id);
-                // Filtrar por unidad si el coordinador tiene unidad asignada
-                if ($user->unit) {
+            // Coordinador ve documentos de Etapa 1, opcionalmente filtrados por unidad
+            $query->whereIn('status', ['sent', 'denied']);
+            if ($user->unit) {
+                $query->whereHas('project', function ($q) use ($user) {
                     $q->where('unit', $user->unit);
-                }
-            })->whereIn('status', ['sent', 'denied']);
+                });
+            }
         } elseif ($user->hasRole('Director de Proyección Social')) {
-            // Director ve documentos de Etapa 2
-            $query->whereHas('project', function ($q) use ($user) {
-                $q->where('rev_social_id', $user->id);
-                // Filtrar por unidad si el director tiene unidad asignada
-                if ($user->unit) {
+            // Director ve documentos de Etapa 2, opcionalmente filtrados por unidad
+            $query->where('status', 'approved_stage1');
+            if ($user->unit) {
+                $query->whereHas('project', function ($q) use ($user) {
                     $q->where('unit', $user->unit);
-                }
-            })->where('status', 'approved_stage1');
+                });
+            }
         } elseif ($user->hasRole('Administrador')) {
             // Admin puede ver todos
             $query->whereIn('status', ['sent', 'approved_stage1', 'denied']);
@@ -70,23 +68,27 @@ class ReviewController extends Controller
     {
         $user = Auth::user();
         
-        // Verificar permisos básicos de acceso
+        // Verificar permisos básicos de acceso (sin filtros por creador)
         if ($user->hasRole('Coordinador de Proyección Social')) {
-            if ($projectDocument->project->rev_academic_id !== $user->id) {
-                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
-            }
-            // Verificar si el documento está en un estado visible para Etapa 1
+            // Coordinador puede ver documentos de Etapa 1, opcionalmente filtrados por unidad
             if (!in_array($projectDocument->status, ['sent', 'denied'])) {
                 return redirect()->route('reviews.index')->with('warning', 'Este documento ya no está disponible para su etapa de revisión académica.');
             }
-        } elseif ($user->hasRole('Director de Proyección Social')) {
-            if ($projectDocument->project->rev_social_id !== $user->id) {
-                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
+            // Verificar unidad si está definida
+            if ($user->unit && $projectDocument->project->unit !== $user->unit) {
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento de otra unidad.');
             }
-            // Verificar si el documento está en un estado visible para Etapa 2
+        } elseif ($user->hasRole('Director de Proyección Social')) {
+            // Director puede ver documentos de Etapa 2, opcionalmente filtrados por unidad
             if ($projectDocument->status !== 'approved_stage1') {
                 return redirect()->route('reviews.index')->with('warning', 'Este documento ya no está disponible para su etapa de revisión de proyección social.');
             }
+            // Verificar unidad si está definida
+            if ($user->unit && $projectDocument->project->unit !== $user->unit) {
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento de otra unidad.');
+            }
+        } elseif ($user->hasRole('Administrador')) {
+            // Admin puede ver todos los documentos
         } else {
             // Usuario sin permisos de revisión
             return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar documentos.');
@@ -118,25 +120,38 @@ class ReviewController extends Controller
             'observation' => 'nullable|string|max:1000',
         ]);
 
-        // Verificar permisos y estado usando Gates
+        // Verificar permisos y estado (sin filtros por creador)
         if ($user->hasRole('Coordinador de Proyección Social')) {
-            if ($projectDocument->project->rev_academic_id !== $user->id) {
-                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
-            }
             if (!in_array($projectDocument->status, ['sent', 'denied'])) {
                 return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión académica.');
+            }
+            // Verificar unidad si está definida
+            if ($user->unit && $projectDocument->project->unit !== $user->unit) {
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento de otra unidad.');
             }
             $stage = 'stage1';
             $newStatus = 'approved_stage1';
         } elseif ($user->hasRole('Director de Proyección Social')) {
-            if ($projectDocument->project->rev_social_id !== $user->id) {
-                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
-            }
             if ($projectDocument->status !== 'approved_stage1') {
                 return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión de proyección social.');
             }
+            // Verificar unidad si está definida
+            if ($user->unit && $projectDocument->project->unit !== $user->unit) {
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento de otra unidad.');
+            }
             $stage = 'stage2';
             $newStatus = 'approved';
+        } elseif ($user->hasRole('Administrador')) {
+            // Admin puede aprobar cualquier documento
+            if (in_array($projectDocument->status, ['sent', 'denied'])) {
+                $stage = 'stage1';
+                $newStatus = 'approved_stage1';
+            } elseif ($projectDocument->status === 'approved_stage1') {
+                $stage = 'stage2';
+                $newStatus = 'approved';
+            } else {
+                return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión.');
+            }
         } else {
             return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar documentos.');
         }
@@ -206,23 +221,34 @@ class ReviewController extends Controller
             'observation.required' => 'La observación es obligatoria al denegar un documento.',
         ]);
 
-        // Verificar permisos y estado
+        // Verificar permisos y estado (sin filtros por creador)
         if ($user->hasRole('Coordinador de Proyección Social')) {
-            if ($projectDocument->project->rev_academic_id !== $user->id) {
-                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
-            }
             if (!in_array($projectDocument->status, ['sent', 'denied'])) {
                 return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión académica.');
             }
+            // Verificar unidad si está definida
+            if ($user->unit && $projectDocument->project->unit !== $user->unit) {
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento de otra unidad.');
+            }
             $stage = 'stage1';
         } elseif ($user->hasRole('Director de Proyección Social')) {
-            if ($projectDocument->project->rev_social_id !== $user->id) {
-                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento.');
-            }
             if ($projectDocument->status !== 'approved_stage1') {
                 return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión de proyección social.');
             }
+            // Verificar unidad si está definida
+            if ($user->unit && $projectDocument->project->unit !== $user->unit) {
+                return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar este documento de otra unidad.');
+            }
             $stage = 'stage2';
+        } elseif ($user->hasRole('Administrador')) {
+            // Admin puede denegar cualquier documento
+            if (in_array($projectDocument->status, ['sent', 'denied'])) {
+                $stage = 'stage1';
+            } elseif ($projectDocument->status === 'approved_stage1') {
+                $stage = 'stage2';
+            } else {
+                return redirect()->route('reviews.index')->with('warning', 'Este documento no está disponible para revisión.');
+            }
         } else {
             return redirect()->route('reviews.index')->with('warning', 'No tienes permisos para revisar documentos.');
         }
