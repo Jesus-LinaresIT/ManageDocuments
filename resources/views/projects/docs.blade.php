@@ -15,6 +15,12 @@
                         </div>
                     @endif
 
+                    @if(session('warning'))
+                        <div class="mb-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                            {{ session('warning') }}
+                        </div>
+                    @endif
+
                     @if(session('error'))
                         <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                             {{ session('error') }}
@@ -73,11 +79,13 @@
                                 @php
                                     $isBlocked = false;
                                     $blockReason = '';
+                                    $showBlockedMessage = false;
 
-                                    // Verificar si el documento ya está aprobado definitivamente
-                                    if ($projectDocument->status === 'approved') {
+                                    // NUEVA REGLA: Solo bloquear si es Documento 1 (sequence = 1) y está aprobado
+                                    if ($projectDocument->documentType->sequence === 1 && $projectDocument->status === 'approved') {
                                         $isBlocked = true;
-                                        $blockReason = 'Este documento ya fue aprobado definitivamente y no admite nuevas cargas.';
+                                        $showBlockedMessage = true;
+                                        $blockReason = 'El Documento 1 ya fue aprobado definitivamente y no admite nuevas cargas.';
                                     }
                                     // Verificar si el Documento 1 está aprobado para desbloquear documentos 2-5
                                     elseif ($projectDocument->documentType->sequence > 1) {
@@ -88,34 +96,45 @@
 
                                         if (!$projectDocument1 || $projectDocument1->status !== 'approved') {
                                             $isBlocked = true;
+                                            $showBlockedMessage = true;
                                             $blockReason = "El Documento 1 ({$documentType1->name}) debe ser aprobado antes de poder subir otros documentos.";
                                         }
                                     }
                                 @endphp
 
-                                @if($isBlocked)
-                                    <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded">
-                                        <p class="text-sm text-green-800">
+                                @if($showBlockedMessage)
+                                    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                                        <p class="text-sm text-yellow-800">
                                             <strong>Bloqueado:</strong> {{ $blockReason }}
                                         </p>
                                     </div>
                                 @endif
 
                                 <!-- Formulario de carga -->
-                                <form action="{{ route('projects.docs.upload', [$project, $projectDocument->documentType]) }}"
-                                      method="POST" enctype="multipart/form-data" class="mb-4">
-                                    @csrf
-                                    <div class="flex items-center space-x-4">
-                                        <input type="file" name="file" accept=".pdf,.docx"
-                                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                               {{ $isBlocked ? 'disabled' : '' }}>
-                                        <button type="submit"
-                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded {{ $isBlocked ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                                {{ $isBlocked ? 'disabled' : '' }}>
-                                            {{ $projectDocument->documentVersions->count() > 0 ? 'Reintentar' : 'Subir' }}
-                                        </button>
+                                @if($projectDocument->documentType->sequence === 1 && $projectDocument->status === 'approved')
+                                    <!-- Para Doc1 aprobado: mostrar badge y ocultar formulario -->
+                                    <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+                                        <p class="text-sm text-green-800">
+                                            <strong>Aprobado (bloqueado):</strong> Este documento ya fue aprobado definitivamente y no admite nuevas cargas.
+                                        </p>
                                     </div>
-                                </form>
+                                @else
+                                    <!-- Para todos los demás casos: mostrar formulario -->
+                                    <form action="{{ route('projects.docs.upload', [$project, $projectDocument->documentType]) }}"
+                                          method="POST" enctype="multipart/form-data" class="mb-4">
+                                        @csrf
+                                        <div class="flex items-center space-x-4">
+                                            <input type="file" name="file" accept=".pdf,.docx"
+                                                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                                   {{ $isBlocked ? 'disabled' : '' }}>
+                                            <button type="submit"
+                                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded {{ $isBlocked ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                                    {{ $isBlocked ? 'disabled' : '' }}>
+                                                {{ $projectDocument->documentVersions->count() > 0 ? 'Subir Nueva Versión' : 'Subir' }}
+                                            </button>
+                                        </div>
+                                    </form>
+                                @endif
 
                                 <!-- Historial de versiones -->
                                 @if($projectDocument->documentVersions->count() > 0)

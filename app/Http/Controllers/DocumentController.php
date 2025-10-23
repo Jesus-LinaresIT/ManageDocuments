@@ -41,9 +41,9 @@ class DocumentController extends Controller
             return back()->with('error', 'Documento no encontrado.');
         }
 
-        // Verificar si el documento ya está aprobado definitivamente
-        if ($projectDocument->status === 'approved') {
-            return back()->with('error', 'Este documento ya fue aprobado definitivamente y no admite nuevas cargas.');
+        // NUEVA REGLA: Solo bloquear subida si es Documento 1 (sequence = 1) y está aprobado
+        if ($documentType->sequence === 1 && $projectDocument->status === 'approved') {
+            return back()->with('warning', 'El Documento 1 ya fue aprobado definitivamente y no admite nuevas cargas.');
         }
 
         // Verificar si el Documento 1 está aprobado para desbloquear documentos 2-5
