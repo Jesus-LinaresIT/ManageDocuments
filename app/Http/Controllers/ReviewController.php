@@ -32,13 +32,8 @@ class ReviewController extends Controller
             }
         } elseif ($user->hasRole('Director de Proyección Social')) {
             // Director ve documentos de Etapa 2, opcionalmente filtrados por unidad
-            if ($user->unit) {
-                $query->whereHas('project', function ($q) use ($user) {
-                    $q->where('unit', $user->unit);
-                })->where('status', ['approved_stage1']);
-            }else{
-                $query->where('id', 0);
-            }
+            $query->whereIn('status', ['approved_stage1']);
+
         } elseif ($user->hasRole('Administrador')) {
             // Admin puede ver todos
             $query->whereIn('status', ['sent', 'approved_stage1', 'denied']);
