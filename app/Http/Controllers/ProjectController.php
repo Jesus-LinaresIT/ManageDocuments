@@ -42,10 +42,13 @@ class ProjectController extends Controller
         
         // Si es Coordinador, precargar datos
         if ($user->hasRole('Coordinador de Proyección Social')) {
+            $director = User::role('Director de Proyección Social')->first();
             $preloadedData = [
                 'unit' => $user->unit ?? 'FICA', // Usar unidad del coordinador
                 'rev_academic_id' => $user->id, // El coordinador es el revisor académico
-                'rev_social_id' => User::role('Director de Proyección Social')->first()?->id ?? null
+                'rev_academic_name' => $user->name, // Nombre del coordinador
+                'rev_social_id' => $director?->id ?? null,
+                'rev_social_name' => $director?->name ?? 'Lic. William Antonio Geliz'
             ];
         }
 
@@ -56,7 +59,7 @@ class ProjectController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'period' => 'required|string|max:255',
+            'period' => 'required|string|in:Ciclo1,Ciclo2',
             'unit' => 'required|string|in:FICA,FACE,FADE,FACS',
             'target_date' => 'required|date',
             'teacher_id' => 'required|exists:users,id',

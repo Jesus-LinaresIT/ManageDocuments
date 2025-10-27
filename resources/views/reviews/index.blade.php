@@ -47,7 +47,9 @@
                                 <select name="status" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                                     <option value="">Todos los estados</option>
                                     <option value="sent" {{ request('status') == 'sent' ? 'selected' : '' }}>Enviado</option>
-                                    <option value="approved_stage1" {{ request('status') == 'approved_stage1' ? 'selected' : '' }}>Aprobado Etapa 1</option>
+                                    <option value="pending_stage2" {{ request('status') == 'pending_stage2' ? 'selected' : '' }}>Pendiente Etapa 2</option>
+                                    <option value="pending_stage3" {{ request('status') == 'pending_stage3' ? 'selected' : '' }}>Pendiente Etapa 3</option>
+                                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Aprobado</option>
                                     <option value="denied" {{ request('status') == 'denied' ? 'selected' : '' }}>Denegado</option>
                                 </select>
                             </div>
@@ -102,16 +104,16 @@
                                                     $statusColors = [
                                                         'pending' => 'bg-gray-100 text-gray-800',
                                                         'sent' => 'bg-yellow-100 text-yellow-800',
-                                                        'approved_stage1' => 'bg-blue-100 text-blue-800',
-                                                        'in_stage2' => 'bg-purple-100 text-purple-800',
+                                                        'pending_stage2' => 'bg-blue-100 text-blue-800',
+                                                        'pending_stage3' => 'bg-purple-100 text-purple-800',
                                                         'approved' => 'bg-green-100 text-green-800',
                                                         'denied' => 'bg-red-100 text-red-800',
                                                     ];
                                                     $statusLabels = [
                                                         'pending' => 'Pendiente',
                                                         'sent' => 'Enviado',
-                                                        'approved_stage1' => 'Aprobado Etapa 1',
-                                                        'in_stage2' => 'En Etapa 2',
+                                                        'pending_stage2' => 'Pendiente Etapa 2',
+                                                        'pending_stage3' => 'Pendiente Etapa 3',
                                                         'approved' => 'Aprobado',
                                                         'denied' => 'Denegado',
                                                     ];
@@ -124,9 +126,16 @@
                                                 {{ $document->updated_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <a href="{{ route('reviews.show', $document) }}" class="text-indigo-600 hover:text-indigo-900">
-                                                    Revisar
-                                                </a>
+                                                <div class="flex flex-col">
+                                                    <a href="{{ route('reviews.show', $document) }}" class="text-indigo-600 hover:text-indigo-900">
+                                                        Revisar
+                                                    </a>
+                                                    @if($document->status === 'pending_stage3')
+                                                        <span class="text-xs text-green-600 mt-1">
+                                                            ✓ Aprobado por Director
+                                                        </span>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

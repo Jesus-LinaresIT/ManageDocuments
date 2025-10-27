@@ -44,16 +44,16 @@
                                                     $statusColors = [
                                                         'pending' => 'bg-gray-100 text-gray-800',
                                                         'sent' => 'bg-yellow-100 text-yellow-800',
-                                                        'approved_stage1' => 'bg-blue-100 text-blue-800',
-                                                        'in_stage2' => 'bg-purple-100 text-purple-800',
+                                                        'pending_stage2' => 'bg-blue-100 text-blue-800',
+                                                        'pending_stage3' => 'bg-purple-100 text-purple-800',
                                                         'approved' => 'bg-green-100 text-green-800',
                                                         'denied' => 'bg-red-100 text-red-800',
                                                     ];
                                                     $statusLabels = [
                                                         'pending' => 'Pendiente',
                                                         'sent' => 'Enviado',
-                                                        'approved_stage1' => 'Aprobado Etapa 1',
-                                                        'in_stage2' => 'En Etapa 2',
+                                                        'pending_stage2' => 'Pendiente Etapa 2',
+                                                        'pending_stage3' => 'Pendiente Etapa 3',
                                                         'approved' => 'Aprobado',
                                                         'denied' => 'Denegado',
                                                     ];

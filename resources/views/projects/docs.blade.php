@@ -48,16 +48,16 @@
                                         $statusColors = [
                                             'pending' => 'bg-gray-100 text-gray-800',
                                             'sent' => 'bg-yellow-100 text-yellow-800',
-                                            'approved_stage1' => 'bg-blue-100 text-blue-800',
-                                            'in_stage2' => 'bg-purple-100 text-purple-800',
+                                            'pending_stage2' => 'bg-yellow-100 text-yellow-800', // Para docente, mostrar como "En Revisión"
+                                            'pending_stage3' => 'bg-yellow-100 text-yellow-800', // Para docente, mostrar como "En Revisión"
                                             'approved' => 'bg-green-100 text-green-800',
                                             'denied' => 'bg-red-100 text-red-800',
                                         ];
                                         $statusLabels = [
                                             'pending' => 'Pendiente',
                                             'sent' => 'Enviado',
-                                            'approved_stage1' => 'Aprobado Etapa 1',
-                                            'in_stage2' => 'En Etapa 2',
+                                            'pending_stage2' => 'En Revisión', // Para docente, mostrar como "En Revisión"
+                                            'pending_stage3' => 'En Revisión', // Para docente, mostrar como "En Revisión"
                                             'approved' => 'Aprobado',
                                             'denied' => 'Denegado',
                                         ];
@@ -67,7 +67,7 @@
                                     </span>
                                 </div>
 
-                                @if($projectDocument->last_observation)
+                                @if($projectDocument->last_observation && !in_array($projectDocument->status, ['pending_stage2', 'pending_stage3']))
                                     <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
                                         <p class="text-sm text-yellow-800">
                                             <strong>Observación:</strong> {{ $projectDocument->last_observation }}

@@ -31,8 +31,12 @@
 
                             <div>
                                 <label for="period" class="block text-sm font-medium text-gray-700">Período</label>
-                                <input type="text" name="period" id="period" value="{{ old('period') }}" 
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                                <select name="period" id="period" 
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                                    <option value="">Seleccionar período</option>
+                                    <option value="Ciclo1" {{ old('period') == 'Ciclo1' ? 'selected' : '' }}>Ciclo1</option>
+                                    <option value="Ciclo2" {{ old('period') == 'Ciclo2' ? 'selected' : '' }}>Ciclo2</option>
+                                </select>
                             </div>
 
                             <div>
@@ -68,28 +72,16 @@
 
                             <div>
                                 <label for="rev_academic_id" class="block text-sm font-medium text-gray-700">Coordinador de Proyección Social</label>
-                                <select name="rev_academic_id" id="rev_academic_id" 
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                                    <option value="">Seleccionar revisor académico</option>
-                                    @foreach($academicReviewers as $reviewer)
-                                        <option value="{{ $reviewer->id }}" {{ (old('rev_academic_id') ?? $preloadedData['rev_academic_id'] ?? '') == $reviewer->id ? 'selected' : '' }}>
-                                            {{ $reviewer->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <input type="hidden" name="rev_academic_id" value="{{ $preloadedData['rev_academic_id'] ?? '' }}">
+                                <input type="text" value="{{ $preloadedData['rev_academic_name'] ?? 'No disponible' }}" 
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly>
                             </div>
 
                             <div>
                                 <label for="rev_social_id" class="block text-sm font-medium text-gray-700">Director de Proyección Social</label>
-                                <select name="rev_social_id" id="rev_social_id" 
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                                    <option value="">Seleccionar revisor social</option>
-                                    @foreach($socialReviewers as $reviewer)
-                                        <option value="{{ $reviewer->id }}" {{ (old('rev_social_id') ?? $preloadedData['rev_social_id'] ?? '') == $reviewer->id ? 'selected' : '' }}>
-                                            {{ $reviewer->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <input type="hidden" name="rev_social_id" value="{{ $preloadedData['rev_social_id'] ?? '' }}">
+                                <input type="text" value="{{ $preloadedData['rev_social_name'] ?? 'Lic. William Antonio Geliz' }}" 
+                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly>
                             </div>
                         </div>
 
