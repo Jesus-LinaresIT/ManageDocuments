@@ -20,9 +20,17 @@ class ProjectController extends Controller
             // Admin y Director ven todos los proyectos
             $projects = $query->paginate(15);
         } elseif ($user->hasRole('Coordinador de Proyección Social') || $user->hasRole('Decano/a')) {
-            // Coordinador y Decano ven todos los proyectos, opcionalmente filtrados por unidad
+            // Coordinador y Decano ven proyectos de su unidad O proyectos que ellos crearon
             $unit = $user->unit ?? null;
-            $projects = $unit ? $query->where('unit', $unit)->paginate(15) : $query->paginate(15);
+            if ($unit) {
+                $query->where(function($q) use ($unit, $user) {
+                    $q->where('unit', $unit)
+                      ->orWhere('rev_academic_id', $user->id);
+                });
+            } else {
+                $query->where('rev_academic_id', $user->id);
+            }
+            $projects = $query->paginate(15);
         } else {
             // Docente: solo sus proyectos
             $projects = $query->where('teacher_id', $user->id)->paginate(15);
@@ -44,7 +52,6 @@ class ProjectController extends Controller
         if ($user->hasRole('Coordinador de Proyección Social')) {
             $director = User::role('Director de Proyección Social')->first();
             $preloadedData = [
-                'unit' => $user->unit ?? 'FICA', // Usar unidad del coordinador
                 'rev_academic_id' => $user->id, // El coordinador es el revisor académico
                 'rev_academic_name' => $user->name, // Nombre del coordinador
                 'rev_social_id' => $director?->id ?? null,
@@ -101,9 +108,21 @@ class ProjectController extends Controller
         if ($user->hasRole('Administrador')) {
             // Admin puede ver todos
         } elseif ($user->hasRole('Coordinador de Proyección Social') || $user->hasRole('Decano/a')) {
-            // Coordinador y Decano pueden ver proyectos de su unidad
+            // Coordinador y Decano pueden ver proyectos de su unidad O proyectos que ellos crearon
             $unit = $user->unit ?? null;
-            if ($unit && $project->unit !== $unit) {
+            $canView = false;
+            
+            // Pueden ver si es de su unidad
+            if ($unit && $project->unit === $unit) {
+                $canView = true;
+            }
+            
+            // Pueden ver si ellos crearon el proyecto (como coordinador académico)
+            if ($project->rev_academic_id === $user->id) {
+                $canView = true;
+            }
+            
+            if (!$canView) {
                 abort(403, 'No tienes permisos para ver este proyecto.');
             }
         } elseif ($user->hasRole('Director de Proyección Social')) {
