@@ -307,9 +307,25 @@ class ReviewController extends Controller
             'observation' => $request->observation,
         ]);
 
+        // Determinar el nuevo estado según la etapa y el rol
+        $newStatus = 'denied'; // Por defecto
+        if ($user->hasRole('Coordinador de Proyección Social')) {
+            if ($stage === 'stage1') {
+                $newStatus = 'denied'; // Coordinador deniega directamente en etapa 1
+            } elseif ($stage === 'stage3') {
+                $newStatus = 'denied'; // Coordinador confirma denegación final en etapa 3
+            }
+        } elseif ($user->hasRole('Director de Proyección Social')) {
+            if ($stage === 'stage2') {
+                $newStatus = 'pending_stage3'; // Director deniega, regresa al Coordinador
+            }
+        } elseif ($user->hasRole('Administrador')) {
+            $newStatus = 'denied'; // Admin puede denegar directamente
+        }
+
         // Actualizar estado del documento
         $projectDocument->update([
-            'status' => 'denied',
+            'status' => $newStatus,
             'last_observation' => $request->observation,
         ]);
 
@@ -326,16 +342,31 @@ class ReviewController extends Controller
             ]
         ]);
 
-        // Enviar notificación al docente
-        $projectDocument->project->teacher->notify(
-            new DocumentDeniedNotification($projectDocument, $stage, $request->observation)
-        );
+        // Enviar notificaciones según la etapa
+        if ($stage === 'stage1') {
+            // Etapa 1: Coordinador deniega directamente, notificar al docente
+            $projectDocument->project->teacher->notify(
+                new DocumentDeniedNotification($projectDocument, $stage, $request->observation)
+            );
+        } elseif ($stage === 'stage2') {
+            // Etapa 2: Director deniega, notificar al Coordinador (no al docente aún)
+            $projectDocument->project->revAcademic->notify(
+                new DocumentReadyForStage2Notification($projectDocument)
+            );
+        } elseif ($stage === 'stage3') {
+            // Etapa 3: Coordinador confirma denegación final, notificar al docente
+            $projectDocument->project->teacher->notify(
+                new DocumentDeniedNotification($projectDocument, $stage, $request->observation)
+            );
+        }
 
         // Redirigir a la bandeja con mensaje específico según la etapa
         if ($stage === 'stage1') {
             return redirect()->route('reviews.index')->with('warning', 'Documento denegado en Etapa 1 (Revisión Académica). El docente ha sido notificado para realizar las correcciones necesarias.');
+        } elseif ($stage === 'stage2') {
+            return redirect()->route('reviews.index')->with('warning', 'Documento denegado en Etapa 2. Regresado al Coordinador para confirmación final.');
         } else {
-            return redirect()->route('reviews.index')->with('warning', 'Documento denegado en Etapa 2 (Revisión de Proyección Social). El docente ha sido notificado para realizar las correcciones necesarias.');
+            return redirect()->route('reviews.index')->with('warning', 'Documento denegado definitivamente. El docente ha sido notificado para realizar las correcciones necesarias.');
         }
     }
 }

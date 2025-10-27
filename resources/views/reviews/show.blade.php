@@ -157,31 +157,109 @@
                         <h4 class="text-lg font-medium text-blue-900 mb-4">Decisión de Revisión</h4>
 
                         @if($projectDocument->status === 'pending_stage3' && auth()->user()->hasRole('Coordinador de Proyección Social'))
-                            <!-- Solo mostrar aprobación en Etapa 3 para Coordinador -->
-                            <div class="max-w-md mx-auto">
-                                <form action="{{ route('reviews.approve', $projectDocument) }}" method="POST">
-                                    @csrf
-                                    <div class="bg-green-50 p-4 rounded border border-green-200">
-                                        <h5 class="font-medium text-green-900 mb-2">Confirmar Aprobación Final</h5>
-                                        <p class="text-sm text-green-800 mb-3">
-                                            El Director ya aprobó este documento. Confirma la aprobación final para notificar al docente.
-                                        </p>
-                                        <div class="mb-3">
-                                            <label for="approve_observation" class="block text-sm font-medium text-gray-700 mb-1">
-                                                Observaciones (opcional)
-                                            </label>
-                                            <textarea name="observation" id="approve_observation" rows="3"
-                                                      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                      placeholder="Comentarios adicionales sobre la aprobación final..."></textarea>
+                            <!-- Mostrar opciones de confirmación en Etapa 3 para Coordinador -->
+                            @php
+                                // Obtener la última revisión del Director (stage2)
+                                $directorReview = $projectDocument->reviews->where('stage', 'stage2')->last();
+                                $directorDecision = $directorReview ? $directorReview->decision : null;
+                            @endphp
+                            
+                            @if($directorDecision === 'approved')
+                                <!-- Director aprobó, mostrar confirmación de aprobación -->
+                                <div class="max-w-md mx-auto">
+                                    <form action="{{ route('reviews.approve', $projectDocument) }}" method="POST">
+                                        @csrf
+                                        <div class="bg-green-50 p-4 rounded border border-green-200">
+                                            <h5 class="font-medium text-green-900 mb-2">Confirmar Aprobación Final</h5>
+                                            <p class="text-sm text-green-800 mb-3">
+                                                El Director ya aprobó este documento. Confirma la aprobación final para notificar al docente.
+                                            </p>
+                                            <div class="mb-3">
+                                                <label for="approve_observation" class="block text-sm font-medium text-gray-700 mb-1">
+                                                    Observaciones (opcional)
+                                                </label>
+                                                <textarea name="observation" id="approve_observation" rows="3"
+                                                          class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                                          placeholder="Comentarios adicionales sobre la aprobación final..."></textarea>
+                                            </div>
+                                            <button type="submit"
+                                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
+                                                    onclick="return confirm('¿Estás seguro de confirmar la aprobación final de este documento?')">
+                                                Confirmar Aprobación Final
+                                            </button>
                                         </div>
-                                        <button type="submit"
-                                                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
-                                                onclick="return confirm('¿Estás seguro de confirmar la aprobación final de este documento?')">
-                                            Confirmar Aprobación Final
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                                    </form>
+                                </div>
+                            @elseif($directorDecision === 'denied')
+                                <!-- Director denegó, mostrar confirmación de denegación -->
+                                <div class="max-w-md mx-auto">
+                                    <form action="{{ route('reviews.deny', $projectDocument) }}" method="POST">
+                                        @csrf
+                                        <div class="bg-red-50 p-4 rounded border border-red-200">
+                                            <h5 class="font-medium text-red-900 mb-2">Confirmar Denegación Final</h5>
+                                            <p class="text-sm text-red-800 mb-3">
+                                                El Director denegó este documento. Confirma la denegación final para notificar al docente.
+                                            </p>
+                                            <div class="mb-3">
+                                                <label for="deny_observation" class="block text-sm font-medium text-gray-800 mb-1">
+                                                    Observaciones adicionales (opcional)
+                                                </label>
+                                                <textarea name="observation" id="deny_observation" rows="3"
+                                                          class="w-full rounded-md border-gray-300 focus:border-red-500 focus:ring-red-500"
+                                                          placeholder="Comentarios adicionales sobre la denegación final..."></textarea>
+                                            </div>
+                                            <button type="submit"
+                                                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full"
+                                                    onclick="return confirm('¿Estás seguro de confirmar la denegación final de este documento?')">
+                                                Confirmar Denegación Final
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            @else
+                                <!-- Fallback: mostrar ambas opciones si no se puede determinar la decisión del Director -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <form action="{{ route('reviews.approve', $projectDocument) }}" method="POST">
+                                        @csrf
+                                        <div class="bg-green-50 p-4 rounded border border-green-200">
+                                            <h5 class="font-medium text-green-900 mb-2">Confirmar Aprobación Final</h5>
+                                            <div class="mb-3">
+                                                <label for="approve_observation" class="block text-sm font-medium text-gray-700 mb-1">
+                                                    Observaciones (opcional)
+                                                </label>
+                                                <textarea name="observation" id="approve_observation" rows="3"
+                                                          class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                                          placeholder="Comentarios adicionales..."></textarea>
+                                            </div>
+                                            <button type="submit"
+                                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
+                                                    onclick="return confirm('¿Estás seguro de confirmar la aprobación final?')">
+                                                Confirmar Aprobación Final
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <form action="{{ route('reviews.deny', $projectDocument) }}" method="POST">
+                                        @csrf
+                                        <div class="bg-red-50 p-4 rounded border border-red-200">
+                                            <h5 class="font-medium text-red-900 mb-2">Confirmar Denegación Final</h5>
+                                            <div class="mb-3">
+                                                <label for="deny_observation" class="block text-sm font-medium text-gray-800 mb-1">
+                                                    Observaciones (obligatorio)
+                                                </label>
+                                                <textarea name="observation" id="deny_observation" rows="3" required
+                                                          class="w-full rounded-md border-gray-300 focus:border-red-500 focus:ring-red-500"
+                                                          placeholder="Explica las razones de la denegación..."></textarea>
+                                            </div>
+                                            <button type="submit"
+                                                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full"
+                                                    onclick="return confirm('¿Estás seguro de confirmar la denegación final?')">
+                                                Confirmar Denegación Final
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            @endif
                         @else
                             <!-- Formularios normales para otras etapas -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

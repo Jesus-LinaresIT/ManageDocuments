@@ -131,9 +131,24 @@
                                                         Revisar
                                                     </a>
                                                     @if($document->status === 'pending_stage3')
-                                                        <span class="text-xs text-green-600 mt-1">
-                                                            ✓ Aprobado por Director
-                                                        </span>
+                                                        @php
+                                                            // Obtener la última revisión del Director (stage2)
+                                                            $directorReview = $document->reviews->where('stage', 'stage2')->last();
+                                                            $directorDecision = $directorReview ? $directorReview->decision : null;
+                                                        @endphp
+                                                        @if($directorDecision === 'approved')
+                                                            <span class="text-xs text-green-600 mt-1">
+                                                                ✓ Aprobado por Director
+                                                            </span>
+                                                        @elseif($directorDecision === 'denied')
+                                                            <span class="text-xs text-red-600 mt-1">
+                                                                ✗ Denegado por Director
+                                                            </span>
+                                                        @else
+                                                            <span class="text-xs text-purple-600 mt-1">
+                                                                ⚠ Pendiente confirmación
+                                                            </span>
+                                                        @endif
                                                     @endif
                                                 </div>
                                             </td>
