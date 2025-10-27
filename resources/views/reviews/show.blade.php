@@ -112,13 +112,30 @@
                         <div class="mb-6">
                             <h4 class="text-lg font-medium mb-4">Historial de Revisiones</h4>
                             <div class="space-y-3">
-                                @foreach($projectDocument->reviews->sortByDesc('created_at') as $review)
+                                @php
+                                    // Filtrar revisiones según el contexto
+                                    $reviewsToShow = $projectDocument->reviews->sortByDesc('created_at');
+                                    
+                                    // Si el documento está en pending_stage3 y el usuario es coordinador,
+                                    // solo mostrar la acción del Director (stage2)
+                                    if ($projectDocument->status === 'pending_stage3' && auth()->user()->hasRole('Coordinador de Proyección Social')) {
+                                        $reviewsToShow = $reviewsToShow->where('stage', 'stage2');
+                                    }
+                                @endphp
+                                
+                                @foreach($reviewsToShow as $review)
                                     <div class="p-3 bg-gray-50 rounded border">
                                         <div class="flex justify-between items-start">
                                             <div>
                                                 <span class="text-sm font-medium">{{ $review->reviewer->name }}</span>
                                                 <span class="text-xs text-gray-500 ml-2">
-                                                    {{ $review->stage === 'stage1' ? 'Etapa 1' : 'Etapa 2' }}
+                                                    @if($review->stage === 'stage1')
+                                                        Etapa 1
+                                                    @elseif($review->stage === 'stage2')
+                                                        Etapa 2
+                                                    @elseif($review->stage === 'stage3')
+                                                        Etapa 3
+                                                    @endif
                                                 </span>
                                                 <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $review->decision === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                                     {{ $review->decision === 'approved' ? 'Aprobado' : 'Denegado' }}
