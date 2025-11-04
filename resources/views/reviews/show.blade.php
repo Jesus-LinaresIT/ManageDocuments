@@ -84,29 +84,27 @@
                         </div>
                     @endif
 
-                    <!-- Historial de versiones -->
+                    <!-- Versión del Documento -->
                     @if($projectDocument->documentVersions->count() > 0)
+                        @php $version = $projectDocument->documentVersions->first(); @endphp
                         <div class="mb-6">
-                            <h4 class="text-lg font-medium mb-4">Versiones del Documento</h4>
-                            <div class="space-y-3">
-                                @foreach($projectDocument->documentVersions->sortByDesc('version') as $version)
-                                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded border">
-                                        <div>
-                                            <span class="text-sm font-medium">Versión {{ $version->version }}</span>
-                                            <span class="text-xs text-gray-500 ml-2">{{ $version->original_name }}</span>
-                                            <span class="text-xs text-gray-500 ml-2">{{ number_format($version->size / 1024, 2) }} KB</span>
-                                        </div>
-                                        <div class="flex space-x-2">
-                                            <span class="text-xs text-gray-500">{{ $version->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
-                                            <a href="{{ route('documents.download', $version) }}"
-                                               class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
-                                        </div>
-                                    </div>
-                                @endforeach
+                            <h4 class="text-lg font-medium mb-4">Version del Documento</h4>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded border">
+                                <div>
+                                    <span class="text-sm font-medium">Versión {{ $version->version }}</span>
+                                    <span class="text-xs text-gray-500 ml-2">{{ $version->original_name }}</span>
+                                    <span class="text-xs text-gray-500 ml-2">{{ number_format($version->size / 1024, 2) }} KB</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <span class="text-xs text-gray-500">{{ $version->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
+                                    <a href="{{ route('documents.download', $version) }}"
+                                       class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
+                                </div>
                             </div>
                         </div>
                     @endif
 
+                    @if(!auth()->user()->hasRole('Coordinador de Proyección Social') && !auth()->user()->hasRole('Director de Proyección Social'))
                     <!-- Historial de revisiones -->
                     @if($projectDocument->reviews->count() > 0)
                         <div class="mb-6">
@@ -150,6 +148,7 @@
                                 @endforeach
                             </div>
                         </div>
+                    @endif
                     @endif
 
                     <!-- Formularios de revisión -->

@@ -120,7 +120,15 @@ class ReviewController extends Controller
             ]
         ]);
 
-        $projectDocument->load(['project.teacher', 'documentType', 'documentVersions', 'reviews.reviewer']);
+        $projectDocument->load([
+            'project.teacher',
+            'documentType',
+            // Solo cargar la última versión
+            'documentVersions' => function ($q) {
+                $q->orderByDesc('version')->limit(1);
+            },
+            'reviews.reviewer'
+        ]);
 
         return view('reviews.show', compact('projectDocument'));
     }

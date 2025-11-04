@@ -74,7 +74,15 @@ class ProjectController extends Controller
             'rev_social_id' => 'required|exists:users,id',
         ]);
 
-        $project = Project::create($request->all());
+        // Obtener el año actual y concatenarlo al período
+        $currentYear = date('Y');
+        $periodWithYear = $request->period . '-' . $currentYear;
+
+        // Preparar los datos para crear el proyecto con el período concatenado
+        $projectData = $request->all();
+        $projectData['period'] = $periodWithYear;
+
+        $project = Project::create($projectData);
 
         // Crear los 5 ProjectDocument para el proyecto
         $documentTypes = \App\Models\DocumentType::all();
