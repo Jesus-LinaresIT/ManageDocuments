@@ -142,22 +142,25 @@
                                     </form>
                                 @endif
 
-                                <!-- Versión del documento (solo última) -->
+                                <!-- Historial de versiones del documento -->
                                 @if($projectDocument->documentVersions->count() > 0)
-                                    @php $version = $projectDocument->documentVersions->sortByDesc('version')->first(); @endphp
                                     <div class="mt-4">
-                                        <h5 class="text-sm font-medium text-gray-700 mb-2">Version del Documento</h5>
-                                        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
-                                            <div>
-                                                <span class="text-sm font-medium">Versión {{ $version->version }}</span>
-                                                <span class="text-xs text-gray-500 ml-2">{{ $version->original_name }}</span>
-                                                <span class="text-xs text-gray-500 ml-2">{{ number_format($version->size / 1024, 2) }} KB</span>
-                                            </div>
-                                            <div class="flex space-x-2">
-                                                <span class="text-xs text-gray-500">{{ $version->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
-                                                <a href="{{ route('documents.download', $version) }}"
-                                                   class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
-                                            </div>
+                                        <h5 class="text-sm font-medium text-gray-700 mb-2">Versiones del Documento</h5>
+                                        <div class="space-y-2">
+                                            @foreach($projectDocument->documentVersions->sortByDesc('version') as $version)
+                                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                                    <div>
+                                                        <span class="text-sm font-medium">Versión {{ $version->version }}</span>
+                                                        <span class="text-xs text-gray-500 ml-2">{{ $version->original_name }}</span>
+                                                        <span class="text-xs text-gray-500 ml-2">{{ number_format($version->size / 1024, 2) }} KB</span>
+                                                    </div>
+                                                    <div class="flex space-x-2">
+                                                        <span class="text-xs text-gray-500">{{ $version->created_at->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
+                                                        <a href="{{ route('documents.download', $version) }}"
+                                                           class="text-blue-600 hover:text-blue-800 text-xs">Descargar</a>
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 @endif
